@@ -14,13 +14,16 @@ requestRouter.post(
       const status = req.params.status;
 
       const allowedStatus = ["interested", "ignored"];
-      if (!allowedStatus.includes(status)) {
-        res.send("invalid status type:" + status);
-      }
+    if (!allowedStatus.includes(status)) {
+      return res.send("invalid status type:" + status);
+    }
+
+
       const toUser = await User.findById( toUserId );
-      if (!toUser) {
-        res.status(404).json({ message: "user not found" });
-      }
+     if (!toUser) {
+       return res.status(404).json({ message: "user not found" });
+     }
+     
       const existingConnectionRequest = await ConnectionRequestModel.findOne({
         $or: [
           { fromUserId, toUserId },
@@ -45,7 +48,12 @@ requestRouter.post(
         data,
       });
     } catch (error) {
-      res.status(400).send("ERROR:" + error);
+      console.log(error); // 👈 ADD THIS
+
+      res.status(400).json({
+        message: error.message,
+      });
+
     }
   }
 );
@@ -63,7 +71,7 @@ requestRouter.post(
         return res.status(400).json({ message: "Status not allowed!" });
       }
 
-      const connectionRequest = await ConnectionRequest.findOne({
+      const connectionRequest = await ConnectionRequestModel.findOne({
         _id: requestId,
         toUserId: loggedInUser._id,
         status: "interested",
@@ -75,11 +83,9 @@ requestRouter.post(
           .json({ message: "Connection request not found" });
       }
 
-      // 4️⃣ Update status
       connectionRequest.status = status;
       const data = await connectionRequest.save();
 
-      // 5️⃣ Respond
       res.json({
         message: "Connection request " + status,
         data,
@@ -90,6 +96,29 @@ requestRouter.post(
   }
 );
 
+/* ===============================
+   GET RECEIVED REQUESTS
+================================= */
+
+requestRouter.get(
+  "/user/requests/received",
+  authprotec,
+  async (req, res) => {
+    try {
+      const loggedUser = req.user;
+
+      const requests = await ConnectionRequestModel.find({
+        toUserId: loggedUser._id,
+        status: "interested",
+      }).populate("fromUserId", "name age photoUrl about gender");
+
+      res.json(requests);
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({ message: error.message });
+    }
+  }
+);
 
 
 module.exports = requestRouter;

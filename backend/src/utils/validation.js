@@ -1,5 +1,9 @@
-const validateEditAllowed = (req)=>{
-const allowedFields = ["name", "gender", "age"];
-const isEditAllowed = Object.keys(req.body).every((i)=>allowedFields.includes(i));
-return isEditAllowed;
-}
+const validateEditAllowed = (data) => {
+  const allowedFields = ["name", "gender", "age", "photoUrl", "about"];
+
+  return Object.keys(data)
+    .filter((key) => data[key] !== undefined)
+    .every((key) => allowedFields.includes(key));
+};
+
+module.exports = { validateEditAllowed };

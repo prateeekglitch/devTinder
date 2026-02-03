@@ -10,13 +10,12 @@ const USER_SAFE_DATA="name gender age";
 userRouter.get("/user/requests/received", authprotec, async (req, res) => {
   try {
     const loggedInUser = req.user;
-
     const connectionRequests = await ConnectionRequestModel.find({
       toUserId: loggedInUser._id,
       status:"interested"
     }).populate (
         "fromUserId",
-        USER_SAFE_DATA,
+        USER_SAFE_DATA,wWad
     )
 
     res.json({
@@ -90,3 +89,5 @@ userRouter.get("/feed", authprotec, async(req,res)=>{
 })
 
 module.exports= userRouter;
+
+

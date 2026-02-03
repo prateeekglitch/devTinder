@@ -14,12 +14,18 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  photoUrl:{
+    type:String,
+  },
   age: {
     type: Number,
   },
   gender: {
     type: String,
   },
+  about:{
+    type:String,
+  }
 },
 {
   timestamps:true,

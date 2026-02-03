@@ -10,21 +10,21 @@ const { ExplainVerbosity } = require("mongodb");
 authRouter.post("/signup", async (req,res) => 
   {  
   try {
-    const {name, email, password,age,gender} = req.body;
+    const {name, email, password,age,gender, photoUrl} = req.body;
 
     const hashedone = await bcrypt.hash(password, 10);
-
 
     const user = new User({
       name: name,
       email: email,
+      photoUrl:photoUrl,
       password: hashedone,
       age:age,
       gender:gender,
 
     });
-   await user.save();
-   res.send("user added done.");
+  const savedUser = await user.save();
+   res.json({message: "user added done.",data:savedUser});
   } catch (error) {
    res.status(400).send("failed to save user.")
   }
@@ -35,7 +35,7 @@ authRouter.post("/login", async (req,res)=>{
   const {email, password} = req.body;
   const user = await User.findOne({email:email});
   if(!user){
-   return res.send("user doesnt exist");
+   return res.status(401).send("user doesnt exist");
   }
 
   const checkpassword = await bcrypt.compare(password,user.password);

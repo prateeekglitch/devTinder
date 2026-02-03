@@ -11,18 +11,26 @@ profileRouter.get("/profile/view", authprotec, async (req, res) => {
     res.status(500).send("could not fetch user.");
   }
 });
-profileRouter.patch("/profile/edit", authprotec, async () => {
+
+profileRouter.patch("/profile/edit", authprotec, async (req,res) => {
   try {
-    if (!validateEditAllowed) {
+    if (!validateEditAllowed(req.body)) {
       return res.send("invalid edit req.");
     }
     const loggedUser = req.user;
 
-    Object.keys(req.body).every((key) => loggedUser[key] == req.body[key]);
+   Object.keys(req.body).forEach((key) => {
+     loggedUser[key] = req.body[key];
+   });
+
     await loggedUser.save();
-    res.send(`${loggedUser.name} you are profile has been edited.`);
+    res.status(200).json({
+      success: true,
+      data: loggedUser,
+    });
+
   } catch (error) {
-    res.status(400).send("error" + err.message);
+    res.status(400).send("error" + error.message);
   }
 });
 
