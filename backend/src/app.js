@@ -8,8 +8,9 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: "http://13.126.67.127",
+credentials: true
+
   }),
 );
 app.use(express.json());
