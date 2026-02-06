@@ -31,7 +31,6 @@ connectDB()
     console.log("database connection eshtablished");
     app.listen(7777, () => {
       console.log("server is listening");
-      console.log("DB connected to:", mongoose.connection.name)
 
     });
   })
